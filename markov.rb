@@ -22,17 +22,19 @@ end
 
 
 class MarkovBot
+	attr_accessor :graph
+
 	def initialize(filename, ngram)
 		@filename = filename
 		@ngram = ngram
+		@graph = {}
 	end
 
 	def get_sample_text(sample_text=@filename)
 		full_text = []
-		puts "Creating text list"
 		File.open(sample_text) do |file|
 			file.each do |line|
-				full_text.concat(line.strip.downcase.split)
+				full_text.concat(line.gsub(/[.,!'‘’“”"?_\-;:()]/, " ").strip.downcase.split)
 			end
 		end
 
@@ -66,12 +68,13 @@ class MarkovBot
 				total = total + value
 			end
 
+			cum_prob = 0.0
 			frequencies.each do |key, value|
-				frequencies[key] = (Float(value)/Float(total)) * 100.0
+				frequencies[key] = cum_prob + (Float(value)/Float(total)) * 100.0
+				cum_prob = frequencies[key]
 			end
 		end
-
-		puts "Graph completed"
+		@graph = markov_list
 		return markov_list
 	end
 end
@@ -79,6 +82,34 @@ end
 
 parser.parse!
 work = MarkovBot.new(options[:filename], options[:ngram])
+# ap work.create_markov_graph(), :indent => -2
 work.create_markov_graph()
 
-ap work.create_markov_graph(), :indent => -2
+rng = Random.new
+
+while true
+	ed_speak = []
+	number = gets.chomp.to_i
+
+	if number < 3
+		puts "Please pick a number greater than 2."
+	else
+		# pick a random word to start
+		ed_speak << work.graph.keys.sample
+		number.times do
+			next_possible_words = work.graph[ed_speak.last]
+			break if next_possible_words.nil?
+			random_number = rng.rand(100.0)
+			winner_word = ''
+			next_possible_words.each do |key, value|
+				winner_word	= key
+				if random_number < value
+					break
+				end
+			end
+			ed_speak << winner_word
+		end
+		puts "Ed says: #{ed_speak.join(" ").capitalize}."
+  end 
+
+end

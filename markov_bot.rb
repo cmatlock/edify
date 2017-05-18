@@ -1,25 +1,5 @@
 require 'ap'
 
-require 'optparse'
-
-options = {:filename => "sample_text.txt", :ngram => 2}
-
-parser = OptionParser.new do |opts|
-	opts.banner = "Usage: markov.rb [options]"
-
-	opts.on('-f', '--filename [filename]', 'Filename of sample text file') do |filename|
-		options[:filename] = filename
-	end
-	opts.on('-n', '--ngram [INTEGER]', Integer, 'N-gram') do |ngram|
-		options[:ngram] = ngram
-	end
-
-	opts.on('-h', '--help', 'Displays this help text') do 
-		puts opts
-		exit
-	end
-end
-
 
 class MarkovBot
 	attr_accessor :graph

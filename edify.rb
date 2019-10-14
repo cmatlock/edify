@@ -1,6 +1,7 @@
 require 'optparse'
 
 
+
 options = {:filename => "sample_text.txt", :ngram => 2}
 
 parser = OptionParser.new do |opts|
@@ -30,13 +31,15 @@ command = ARGV.pop
 
 case command
 	when "run"
+		# run so I can play with it
 		puts "Running"
 	when "create"
+		# create and save graph
 		puts "Creating"
+		create_markov_graph()
 	else
-		puts "Uh...nothing"
+		raise "I need to know what to do, Eddy!" 
 end
 
-
-raise "I need to know what to do, Eddy!" unless command
+# raise "I need to know what to do, Eddy!" unless command
 # work = MarkovBot.new(options[:filename], options[:ngram])
